@@ -1,5 +1,5 @@
 
-from src import getdata as gd
+#from src import getdata as gd
 import pandas as pd
 import seaborn as sns
 import json
@@ -36,18 +36,32 @@ res = requests.get('https://api.glassnode.com/v1/metrics/market/price_usd_close'
 # convert to pandas dataframe
 df = pd.read_json(res.text, convert_dates=['t'])
 
+# mayer multiple calcs
 df["v_log"] = np.log(df["v"])
-
 df['200dma'] = df["v"].rolling(window=200).mean()
+df["200dma_log"] = np.log(df["200dma"])
+df['mayermultiple'] = df["v"]/df['200dma']
+
+# mayer band calcs
+
+df['mayermultiple']
+
+sns.histplot(data=df, x="mayermultiple", bins=30, binrange=[0,6])
+sns.ecdfplot(data=df, x="mayermultiple")
+
+# create dateframe columns that represent the bands and plot them
 
 # make magic lines
 
 sns.lineplot(data=df, x="t", y="v_log")
-sns.lineplot(data=df, x="t", y="v")
+#sns.lineplot(data=df, x="t", y="v")
+sns.lineplot(data=df, x="t", y="mayermultiple")
+sns.lineplot(data=df, x="t", y="200dma_log")
 
 
 
 # make mayer multiple
+# check our math
 
 # make graphs
 
